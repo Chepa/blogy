@@ -3,6 +3,5 @@
 /public/css/style.css
 .env
 .DS_Store
-composer.lock
 .idea
 .phpunit.cache
