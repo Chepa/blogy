@@ -1,0 +1,40 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Unit;
+
+use App\Repository\CategoryRepository;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\DBAL\Result;
+use PHPUnit\Framework\TestCase;
+
+final class CategoryRepositoryTest extends TestCase
+{
+    public function testFindByIdReturnsNullForNonExistent(): void
+    {
+        $result = $this->createMock(Result::class);
+        $result->method('fetchAssociative')->willReturn(false);
+
+        $qb = $this->createMock(QueryBuilder::class);
+        $qb->method('setParameter')->willReturnSelf();
+        $qb->method('executeQuery')->willReturn($result);
+        $qb->method('fetchAssociative')->willReturnCallback(fn () => $result->fetchAssociative());
+
+        $connection = $this->createMock(Connection::class);
+        $connection->method('createQueryBuilder')->willReturn($qb);
+
+        $repo = new CategoryRepository($connection, 6);
+
+        self::assertNull($repo->findById(999));
+    }
+
+    public function testGetPerPageReturnsInjectedValue(): void
+    {
+        $connection = $this->createMock(Connection::class);
+        $repo = new CategoryRepository($connection, 10);
+
+        self::assertSame(10, $repo->getPerPage());
+    }
+}

@@ -1,0 +1,32 @@
+{
+    "name": "blogy/blog",
+    "description": "Simple blog with categories and articles",
+    "type": "project",
+    "require": {
+        "php": ">=8.1",
+        "nikic/fast-route": "^1.3",
+        "php-di/php-di": "^7.0",
+        "smarty/smarty": "^4.3",
+        "doctrine/dbal": "^4.4",
+        "monolog/monolog": "^3.0"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.10",
+        "phpunit/phpunit": "^10.5",
+        "scssphp/scssphp": "^1.12"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "phpstan": "phpstan analyse --memory-limit=256M",
+        "test": "phpunit"
+    }
+}

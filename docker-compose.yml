@@ -1,0 +1,37 @@
+services:
+  web:
+    build: .
+    ports:
+      - "${APP_PORT:-8080}:80"
+    env_file: .env
+    environment:
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-blogy}
+      DB_USER: ${DB_USER:-blogy}
+      DB_PASS: ${DB_PASS:-blogy}
+      BASE_URL: ${BASE_URL:-/}
+    volumes:
+      - .:/var/www/html
+      - ./var:/var/www/html/var
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    env_file: .env
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-blogy}
+      MYSQL_USER: ${DB_USER:-blogy}
+      MYSQL_PASSWORD: ${DB_PASS:-blogy}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    volumes:
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    ports:
+      - "${DB_EXPOSE_PORT:-3306}:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
